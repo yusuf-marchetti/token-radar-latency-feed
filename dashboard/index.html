@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latency Feed — token launch radar</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+<header class="top">
+  <div>
+    <h1>LATENCY FEED <span class="tag">token launch radar</span></h1>
+    <p class="sub">The fastest signal on protocols whose token does not exist yet — ranked by implied value, with the farm plan for each one.</p>
+  </div>
+  <div class="feed-meta">
+    <div><span class="k">MODEL</span><span class="v" id="modelVer">—</span></div>
+    <div><span class="k">SNAPSHOT</span><span class="v" id="snapDate">—</span></div>
+    <div><span class="k">SOURCE</span><span class="v" id="snapSrc">—</span></div>
+  </div>
+</header>
+
+<section class="stats" id="stats" aria-label="Feed totals"></section>
+
+<section class="panel legend">
+  <h2>How to read the feed</h2>
+  <p><b>Implied value</b> = TVL × 0.30 × velocity × overdue × breadth. <b>Velocity</b> is the 7-day TVL change, clamped to −50…+150%. <b>Overdue</b> grows with the days a protocol has run with no token (up to 900 days). <b>Breadth</b> adds 4% per chain, up to 5 chains. <b>Signal age</b> is days from first listing to the snapshot date. Nothing here predicts whether or when a token is issued — it prices what the launch would be worth if the record stayed as it is.</p>
+  <p class="badges"><span class="pill hot">HOT — daily velocity ≥ 1.5%: act within hours</span><span class="pill warm">WARM — 7-day change above zero: act within days</span><span class="pill cool">COOL — flat or falling: watch, no rush</span></p>
+  <p class="fine">“Records no token” means the snapshot's record carries no market cap, CoinGecko id or symbol — not that the protocol has none. The watchlist is the floor, never the ceiling: the board ranks 200 early protocols below it too.</p>
+</section>
+
+<section class="panel controls" aria-label="Filter and sort">
+  <label>Search <input id="q" type="search" placeholder="name or slug…" autocomplete="off"></label>
+  <label>Chain <select id="chain"><option value="">All chains</option></select></label>
+  <label>Category <select id="cat"><option value="">All categories</option></select></label>
+  <label>Signal <select id="lat"><option value="">All signals</option><option value="hot">Hot only</option><option value="warm">Warm only</option><option value="cool">Cool only</option></select></label>
+  <label>Min TVL <select id="minTvl"><option value="0">Any</option><option value="50000000">$50M+</option><option value="100000000">$100M+</option><option value="1000000000">$1B+</option></select></label>
+  <label>Sort <select id="sort"><option value="rank">Rank (implied value)</option><option value="tvl">TVL</option><option value="vel">Daily velocity</option><option value="age">Signal age</option><option value="name">Name A–Z</option></select></label>
+  <button id="liveBtn" type="button">Show live-token protocols</button>
+  <button id="resetBtn" type="button">Reset</button>
+</section>
+
+<main id="board" tabindex="-1">
+  <p class="count" id="count"></p>
+  <div class="table-wrap">
+  <table id="tbl">
+    <thead><tr>
+      <th data-k="rank">#</th><th data-k="name">Protocol</th><th data-k="lat">Signal</th>
+      <th data-k="tvl">TVL</th><th data-k="vel">7d / day</th><th data-k="age">Signal age</th>
+      <th data-k="imp">Implied value</th><th>Chains</th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  </div>
+  <p class="hint">Click a row for its detail view and farm plan. Click a column header to sort.</p>
+</main>
+
+<section class="panel detail" id="detail" aria-label="Protocol detail" hidden></section>
+
+<section class="panel live" id="live" aria-label="Live-token protocols" hidden>
+  <h2>Already trading — kept apart</h2>
+  <p>These protocols already have a token, so the board shows the market's own value for them instead of a model's. They are not ranked and never mix into the board.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Protocol</th><th>TVL</th><th>Market cap</th><th>7d</th><th>Chains</th></tr></thead>
+    <tbody id="liveRows"></tbody>
+  </table></div>
+</section>
+
+<section class="panel sandbox" aria-label="Model sandbox">
+  <h2>Model sandbox — change the model, watch the board move</h2>
+  <p>Same formula, your constants. The sandbox re-ranks the board live from the snapshot's own figures; the submitted board always uses the constants stated above.</p>
+  <div class="sliders">
+    <label>Base multiple <input id="sbBase" type="range" min="0.1" max="0.5" step="0.05" value="0.3"> <output id="sbBaseOut">0.30</output></label>
+    <label>Velocity weight <input id="sbVel" type="range" min="0" max="1.5" step="0.1" value="0.7"> <output id="sbVelOut">0.70</output></label>
+    <label>Overdue range <input id="sbOver" type="range" min="0" max="1" step="0.1" value="0.6"> <output id="sbOverOut">0.60</output></label>
+    <button id="sbReset" type="button">Restore house constants</button>
+  </div>
+  <p class="fine" id="sbNote">Sandbox off — board shows the submitted ranking.</p>
+</section>
+
+<footer>
+  <p>Latency Feed · model <span id="modelVer2">—</span> · data: DefiLlama protocols snapshot, frozen at the date above · no network: every byte on this page comes from its own data file · a protocol's implied value is this feed's own claim, never the exchange's or the protocol's.</p>
+</footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
